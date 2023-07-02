@@ -15,7 +15,6 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import javax.validation.ValidationException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Slf4j
