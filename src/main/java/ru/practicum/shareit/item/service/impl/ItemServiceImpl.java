@@ -14,6 +14,7 @@ import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -39,7 +40,7 @@ public class ItemServiceImpl implements ItemService {
         Item updatedItem = itemRepository.getItemById(itemId).orElseThrow(() ->
                 new ItemNotFoundException(String.format("Вещь не найдена: %s.", item)));
 
-        if (updatedItem.getOwner().getId() != userId) {
+        if (!Objects.equals(updatedItem.getOwner().getId(), userId)) {
             throw new ItemNotFoundException(String
                     .format("Пользователь %d, не является владельцем вещи %s.", userId, item));
         }
