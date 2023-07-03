@@ -6,11 +6,11 @@ import java.util.List;
 
 public interface ItemService {
 
-    ItemDto create(ItemDto itemDto, Long userId);
+    ItemDto create(Long userId, ItemDto itemDto);
 
-    ItemDto update(ItemDto item, Long itemId, Long userId);
+    ItemDto update(Long userId, Long itemId, ItemDto item);
 
-    ItemDto getItemById(Long itemId, Long userId);
+    ItemDto getItemById(Long userId, Long itemId);
 
     List<ItemDto> getAllItemsByUserId(Long userId);
 

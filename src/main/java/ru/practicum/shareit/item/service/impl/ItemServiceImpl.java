@@ -2,8 +2,8 @@ package ru.practicum.shareit.item.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.exception.ItemNotFoundException;
-import ru.practicum.shareit.exception.UserNotFoundException;
+import ru.practicum.shareit.exception.ItemFoundException;
+import ru.practicum.shareit.exception.UserFoundException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
@@ -25,24 +25,21 @@ public class ItemServiceImpl implements ItemService {
     private final UserRepository userRepository;
 
     @Override
-    public ItemDto create(ItemDto itemDto, Long userId) {
-        User owner = userRepository.getUserById(userId).orElseThrow(() ->
-                new UserNotFoundException(String.format("Пользователь %d не найден.", userId)));
+    public ItemDto create(Long userId, ItemDto itemDto) {
+        User owner = userRepository.getUserById(userId);
 
         Item item = ItemMapper.mapToItem(itemDto);
         item.setOwner(owner);
 
-        return ItemMapper.mapToItemDto(itemRepository.createItem(item).get());
+        return ItemMapper.mapToItemDto(itemRepository.createItem(item));
     }
 
     @Override
-    public ItemDto update(ItemDto item, Long itemId, Long userId) {
-        Item updatedItem = itemRepository.getItemById(itemId).orElseThrow(() ->
-                new ItemNotFoundException(String.format("Вещь не найдена: %s.", item)));
+    public ItemDto update(Long userId, Long itemId, ItemDto item) {
+        Item updatedItem = itemRepository.getItemById(userId, itemId);
 
         if (!Objects.equals(updatedItem.getOwner().getId(), userId)) {
-            throw new ItemNotFoundException(String
-                    .format("Пользователь %d, не является владельцем вещи %s.", userId, item));
+            throw new ItemFoundException(userId, itemId);
         }
 
         if (item.getName() != null && !item.getName().isBlank()) {
@@ -57,21 +54,18 @@ public class ItemServiceImpl implements ItemService {
             updatedItem.setAvailable(item.getAvailable());
         }
 
-        return ItemMapper.mapToItemDto(itemRepository.updateItem(updatedItem).get());
+        return ItemMapper.mapToItemDto(itemRepository.updateItem(updatedItem));
     }
 
     @Override
-    public ItemDto getItemById(Long itemId, Long userId) {
+    public ItemDto getItemById(Long userId, Long itemId) {
         userRepository.getUserById(userId);
-        final ItemDto item = ItemMapper.mapToItemDto(itemRepository.getItemById(itemId).orElseThrow(() ->
-                new ItemNotFoundException(String.format("Вещь не найдена: %s.", itemId))));
-        return item;
+        return ItemMapper.mapToItemDto(itemRepository.getItemById(userId, itemId));
     }
 
     @Override
     public List<ItemDto> getAllItemsByUserId(Long userId) {
-        userRepository.getUserById(userId).orElseThrow(() ->
-                new UserNotFoundException(String.format("Пользователь %d не был найден.", userId)));
+        userRepository.getUserById(userId);
 
         return itemRepository.getAllItemsByUserId(userId)
                 .stream()

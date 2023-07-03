@@ -37,32 +37,31 @@ public class ErrorHandler extends ResponseEntityExceptionHandler {
             errors.put("error", error.getObjectName() + ": " + error.getDefaultMessage());
         }
 
-        return handleExceptionInternal(
-                ex, errors, headers, HttpStatus.BAD_REQUEST, request);
+        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler({UserNotFoundException.class, ItemNotFoundException.class})
+    @ExceptionHandler({UserFoundException.class, ItemFoundException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String, String> handleNotFoundException(final RuntimeException e) {
-        return Map.of("error: ", e.getMessage());
+        return Map.of("error", e.getMessage());
     }
 
     @ExceptionHandler({AlreadyExistsException.class})
     @ResponseStatus(HttpStatus.CONFLICT)
     public Map<String, String> handleAlreadyExistsException(final RuntimeException e) {
-        return Map.of("error: ", e.getMessage());
+        return Map.of("error", e.getMessage());
     }
 
     @ExceptionHandler({ValidationException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> handleValidationException(final  RuntimeException e) {
-        return Map.of("error: ", e.getMessage());
+        return Map.of("error", e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Map<String, String> handleThrowable(final Throwable e) {
         log.info(e.getMessage());
-        return Map.of("error: ", e.getClass().toString());
+        return Map.of("error", e.getClass().toString());
     }
 }

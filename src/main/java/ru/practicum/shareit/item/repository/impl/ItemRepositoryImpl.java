@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item.repository.impl;
 
 import org.springframework.stereotype.Repository;
+import ru.practicum.shareit.exception.ItemFoundException;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
 
@@ -21,7 +22,7 @@ public class ItemRepositoryImpl implements ItemRepository {
     }
 
     @Override
-    public Optional<Item> createItem(Item item) {
+    public Item createItem(Item item) {
         item.setId(generatedNewId());
 
         final Long itemId = item.getId();
@@ -31,27 +32,30 @@ public class ItemRepositoryImpl implements ItemRepository {
         itemsByUsers.computeIfAbsent(ownerId, k -> new HashMap<>())
                 .put(itemId, item);
 
-        return getItemById(itemId);
+        return getItemById(ownerId, itemId);
     }
 
     @Override
-    public Optional<Item> updateItem(Item item) {
+    public Item updateItem(Item item) {
         final Long itemId = item.getId();
         final Long ownerId = item.getOwner().getId();
 
         itemMap.put(itemId, item);
         itemsByUsers.get(ownerId).put(itemId, item);
 
-        return getItemById(itemId);
+        return getItemById(ownerId, itemId);
     }
 
     @Override
-    public Optional<Item> getItemById(long itemId) {
-        return Optional.ofNullable(itemMap.get(itemId));
+    public Item getItemById(Long userId, Long itemId) {
+        if (!itemMap.containsKey(itemId)) {
+            throw new ItemFoundException(userId, itemId);
+        }
+        return itemMap.get(itemId);
     }
 
     @Override
-    public List<Item> getAllItemsByUserId(long userId) {
+    public List<Item> getAllItemsByUserId(Long userId) {
         return List.copyOf(itemsByUsers.get(userId).values());
     }
 

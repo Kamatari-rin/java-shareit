@@ -2,6 +2,7 @@ package ru.practicum.shareit.user.repository.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
+import ru.practicum.shareit.exception.UserFoundException;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
@@ -20,7 +21,7 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public Optional<User> create(User user) {
+    public User create(User user) {
         user.setId(generatedNewId());
         userMap.put(user.getId(), user);
         return getUserById(user.getId());
@@ -29,12 +30,15 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public User update(Long userId, User user) {
         userMap.put(userId, user);
-        return getUserById(userId).get();
+        return getUserById(userId);
     }
 
     @Override
-    public Optional<User> getUserById(Long userId) {
-        return Optional.ofNullable(userMap.get(userId));
+    public User getUserById(Long userId) {
+        if (!userMap.containsKey(userId)) {
+            throw new UserFoundException(userId);
+        }
+        return userMap.get(userId);
     }
 
     @Override

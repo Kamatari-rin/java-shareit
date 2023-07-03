@@ -12,8 +12,4 @@ public class Item {
     private String description;
     private Boolean available;
     private User owner;
-
-    public User getOwner() {
-        return owner.toBuilder().build();
-    }
 }

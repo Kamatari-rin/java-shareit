@@ -3,7 +3,7 @@ package ru.practicum.shareit.user.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.AlreadyExistsException;
-import ru.practicum.shareit.exception.UserNotFoundException;
+import ru.practicum.shareit.exception.UserFoundException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
@@ -22,8 +22,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto getUserById(Long id) {
-        return UserMapper.mapToUserDto(userRepository.getUserById(id).orElseThrow(() ->
-                new UserNotFoundException(String.format("Пользователь %d не найден.", id))));
+        return UserMapper.mapToUserDto(userRepository.getUserById(id));
     }
 
     @Override
@@ -42,16 +41,15 @@ public class UserServiceImpl implements UserService {
             throw new AlreadyExistsException("Пользователь с таким Email уже существует.");
         }
 
-        User newUser = userRepository.create(UserMapper.mapToUser(userDto)).get();
+        User newUser = userRepository.create(UserMapper.mapToUser(userDto));
         return UserMapper.mapToUserDto(newUser);
     }
 
     @Override
-    public UserDto update(UserDto userDto, Long id) {
-        User updatedUser = userRepository.getUserById(id).orElseThrow(() ->
-                new UserNotFoundException(String.format("Пользователь %d не найден.", id)));
+    public UserDto update(Long id, UserDto userDto) {
+        User updatedUser = userRepository.getUserById(id);
 
-        final String userEmail = userRepository.getUserById(id).get().getEmail();
+        final String userEmail = userRepository.getUserById(id).getEmail();
         final String updatedUserEmail = userDto.getEmail();
 
         Set<String> emails = getAllEmails();
