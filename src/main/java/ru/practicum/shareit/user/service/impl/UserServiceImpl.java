@@ -1,17 +1,16 @@
 package ru.practicum.shareit.user.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exception.AlreadyExistsException;
-import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.exception.UserFoundException;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
-import ru.practicum.shareit.user.repository.mapper.UserMapper;
 import ru.practicum.shareit.user.service.UserService;
 
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -19,64 +18,55 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
 
+    @Transactional(readOnly = true)
     @Override
-    public UserDto getUserById(Long id) {
-        return UserMapper.mapToUserDto(userRepository.getUserById(id));
+    public User getById(Long id) {
+        return userRepository.findById(id).orElseThrow(
+                () -> new UserFoundException(id));
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<User> getAll() {
+        return userRepository.findAll();
     }
 
     @Override
-    public List<UserDto> getAllUser() {
-        return userRepository.getAllUser()
-                .stream()
-                .map(UserMapper::mapToUserDto)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public UserDto create(UserDto userDto) {
-        Set<String> emails = getAllEmails();
-
-        if (emails.contains(userDto.getEmail())) {
+    public User create(User user) {
+        try {
+            return userRepository.save(user);
+        } catch (DataIntegrityViolationException e) {
             throw new AlreadyExistsException("Пользователь с таким Email уже существует.");
         }
-
-        User newUser = userRepository.create(UserMapper.mapToUser(userDto));
-        return UserMapper.mapToUserDto(newUser);
     }
 
     @Override
-    public UserDto update(Long id, UserDto userDto) {
-        User updatedUser = userRepository.getUserById(id);
+    public User update(Long id, User user) {
+        User updatedUser = userRepository.findById(id).orElseThrow(
+                () -> new UserFoundException(id));
 
-        final String userEmail = userRepository.getUserById(id).getEmail();
-        final String updatedUserEmail = userDto.getEmail();
+        if (user.getName() != null && !user.getName().isBlank()) {
+            updatedUser.setName(user.getName());
+        }
+        if (user.getEmail() != null && !user.getEmail().isBlank()) {
+            updatedUser.setEmail(user.getEmail());
+        }
 
-        Set<String> emails = getAllEmails();
-
-        if (emails.contains(updatedUserEmail) && !userEmail.equals(updatedUserEmail)) {
+        try {
+            return userRepository.saveAndFlush(updatedUser);
+        } catch (DataIntegrityViolationException e) {
             throw new AlreadyExistsException("Пользователь с таким Email уже существует.");
         }
-
-        if (userDto.getName() != null && !userDto.getName().isBlank()) {
-            updatedUser.setName(userDto.getName());
-        }
-        if (userDto.getEmail() != null && !userDto.getEmail().isBlank()) {
-            updatedUser.setEmail(userDto.getEmail());
-        }
-
-        return UserMapper.mapToUserDto(userRepository.update(id, updatedUser));
     }
 
     @Override
-    public void deleteUser(Long userId) {
-        userRepository.getUserById(userId);
-        userRepository.delete(userId);
+    public void delete(Long id) {
+        isUserExist(id);
+        userRepository.deleteById(id);
     }
 
-    private Set<String> getAllEmails() {
-        return userRepository.getAllUser()
-                .stream()
-                .map(User::getEmail)
-                .collect(Collectors.toSet());
+    private void isUserExist(Long id) {
+        userRepository.findById(id).orElseThrow(
+                () -> new UserFoundException(id));
     }
 }
