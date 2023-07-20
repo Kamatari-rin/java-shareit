@@ -36,8 +36,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     @Transactional(readOnly = true)
     public List<Booking> getUserBookings(Long userId, String requestState) {
-        User user = userRepository.findById(userId).orElseThrow(
-                () -> new UserFoundException(userId));
+        User user = getUserOrThrowException(userId);
         State state;
         state = State.valueOf(requestState.toUpperCase());
         LocalDateTime timeNow = LocalDateTime.now();
@@ -70,8 +69,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     @Transactional(readOnly = true)
     public List<Booking> getOwnerBookings(Long userId, String requestState) {
-        User user = userRepository.findById(userId).orElseThrow(
-                () -> new NotFoundException(String.format("Пользователь %d не найден.", userId)));
+        User user = getUserOrThrowException(userId);
         State state;
         state = State.valueOf(requestState.toUpperCase());
         LocalDateTime timeNow = LocalDateTime.now();
@@ -103,11 +101,9 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public Booking getBookingByIdOwnerOrBookerOnly(Long userId, Long bookingId) {
-        Booking booking = bookingRepository.findById(bookingId).orElseThrow(
-                () -> new NotFoundException("Запрос на бронирования не найден."));
+        Booking booking = getBookingOrThrowException(bookingId);
 
-        userRepository.findById(userId).orElseThrow(
-                () -> new ValidationException(String.format("Пользователь %d не найден.", userId)));
+        getUserOrThrowException(userId);
 
         final Long bookerId = booking.getBooker().getId();
         final Long ownerId = booking.getItem().getOwner().getId();
@@ -121,8 +117,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public Booking create(Long itemId, LocalDateTime bookingStart, LocalDateTime bookingEnd, Long bookerId) {
-        User user = userRepository.findById(bookerId).orElseThrow(
-                () -> new NotFoundException(String.format("Пользователь %d не найден.", bookerId)));
+        User user = getUserOrThrowException(bookerId);
 
         if (bookingEnd.isBefore(bookingStart) || bookingEnd.equals(bookingStart)) {
             throw new ValidationException("Дата окончания бронирования не может быть раньше или равна дате бронирования.");
@@ -158,11 +153,9 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public Booking approveBooking(Long userId, Long bookingId, Boolean state) {
-        Booking booking = bookingRepository.findById(bookingId).orElseThrow(
-                () -> new NotFoundException(String.format("Запрос %s на бронирования не был найден.", bookingId)));
+        Booking booking = getBookingOrThrowException(bookingId);
 
-        userRepository.findById(userId).orElseThrow(
-                () -> new NotFoundException(String.format("Пользователь %d не найден.", userId)));
+        getUserOrThrowException(userId);
 
         if (booking.getBooker().getId().equals(userId)) {
             throw new NotFoundException(String.format("У пользователя %s нет доступных бронирований.", userId));
@@ -177,5 +170,15 @@ public class BookingServiceImpl implements BookingService {
 
         booking.setStatus(state ? BookingStatus.APPROVED : BookingStatus.REJECTED);
         return bookingRepository.save(booking);
+    }
+
+    private Booking getBookingOrThrowException(Long bookingId) {
+        return bookingRepository.findById(bookingId).orElseThrow(
+                () -> new NotFoundException("Запрос на бронирования не найден."));
+    }
+
+    private User getUserOrThrowException(Long userId) {
+        return userRepository.findById(userId).orElseThrow(
+                () -> new UserFoundException(userId));
     }
 }

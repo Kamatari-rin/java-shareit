@@ -11,17 +11,17 @@ import ru.practicum.shareit.item.dto.ItemShortDto;
 import ru.practicum.shareit.item.model.Item;
 
 import java.time.LocalDateTime;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.stream.Collectors;
 
-import static ru.practicum.shareit.util.Constant.orderByCreatedDesc;
-import static ru.practicum.shareit.util.Constant.orderByStartDateAsc;
-import static ru.practicum.shareit.util.Constant.orderByStartDateDesc;
+import static ru.practicum.shareit.util.Comparators.orderByCreatedDesc;
+import static ru.practicum.shareit.util.Comparators.orderByStartDateAsc;
+import static ru.practicum.shareit.util.Comparators.orderByStartDateDesc;
 
 @UtilityClass
 public class ItemMapper {
+
+    List<Long> list = new ArrayList<>();
 
     public Item mapToItem(ItemRequestDto itemRequestDto) {
         return Item.builder()
