@@ -4,7 +4,7 @@ import lombok.Builder;
 import lombok.Data;
 import ru.practicum.shareit.booking.dto.BookingShortDto;
 
-import java.util.Set;
+import java.util.SortedSet;
 
 @Data
 @Builder
@@ -15,5 +15,5 @@ public class ItemResponseDto {
     private Boolean available;
     private BookingShortDto lastBooking;
     private BookingShortDto nextBooking;
-    private Set<CommentResponseDto> comments;
+    private SortedSet<CommentResponseDto> comments;
 }
