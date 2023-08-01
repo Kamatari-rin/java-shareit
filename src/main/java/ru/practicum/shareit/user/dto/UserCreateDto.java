@@ -10,9 +10,7 @@ import javax.validation.constraints.NotBlank;
 
 @Data
 @Builder
-public class UserDto {
-
-    private Long id;
+public class UserCreateDto {
 
     @NotBlank(groups = OnCreate.class,
             message = "Имя не может быть пустым.")

@@ -1,23 +1,31 @@
 package ru.practicum.shareit.user.repository.mapper;
 
 import lombok.experimental.UtilityClass;
-import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.dto.UserCreateDto;
+import ru.practicum.shareit.user.dto.UserResponseDto;
 import ru.practicum.shareit.user.dto.UserShortDto;
 import ru.practicum.shareit.user.model.User;
 
 @UtilityClass
 public class UserMapper {
 
-    public User mapToUser(UserDto userDto) {
+    public User mapToUserFromCreateDto(UserCreateDto userCreateDto) {
         return User.builder()
-                .id(userDto.getId())
-                .name(userDto.getName())
-                .email(userDto.getEmail())
+                .name(userCreateDto.getName())
+                .email(userCreateDto.getEmail())
                 .build();
     }
 
-    public UserDto mapToUserDto(User user) {
-        return UserDto.builder()
+    public User mapToUserFromResponseDto(UserResponseDto userResponseDto) {
+        return User.builder()
+                .id(userResponseDto.getId())
+                .name(userResponseDto.getName())
+                .email(userResponseDto.getEmail())
+                .build();
+    }
+
+    public UserResponseDto mapToUserResponseDto(User user) {
+        return UserResponseDto.builder()
                 .id(user.getId())
                 .name(user.getName())
                 .email(user.getEmail())

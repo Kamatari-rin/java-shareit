@@ -10,7 +10,7 @@ import javax.validation.constraints.NotNull;
 @Builder
 public class ItemRequestDto {
 
-    private Long id;
+    private Long ownerId;
 
     @NotBlank
     private String name;
@@ -20,4 +20,6 @@ public class ItemRequestDto {
 
     @NotNull(message = "Поле не может быть пыстым.")
     private Boolean available;
+
+    private Long requestId;
 }
