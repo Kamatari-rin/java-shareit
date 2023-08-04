@@ -7,6 +7,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import javax.validation.ConstraintViolation;
@@ -23,7 +24,8 @@ public class ErrorHandler {
         return new ResponseEntity<>(Map.of("error", e.getMessage()), HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(AlreadyExistsException.class)
+    @ExceptionHandler({AlreadyExistsException.class})
+    @ResponseStatus(HttpStatus.CONFLICT)
     public ResponseEntity<Map<String, String>> handleAlreadyExistsException(final RuntimeException e) {
         return new ResponseEntity<>(Map.of("error", e.getMessage()), HttpStatus.CONFLICT);
     }
@@ -46,7 +48,7 @@ public class ErrorHandler {
         return new ResponseEntity<>(Map.of("error", e.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(ConstraintViolationException.class)
+    @ExceptionHandler({ConstraintViolationException.class})
     public ResponseEntity<Map<String, String>> handleConstraintViolationException(final ConstraintViolationException e) {
         log.debug("Получен статус {} {}. Причина: {}",
                 HttpStatus.BAD_REQUEST.value(),
