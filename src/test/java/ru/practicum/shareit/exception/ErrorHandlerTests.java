@@ -28,7 +28,7 @@ public class ErrorHandlerTests {
 
     @Test
     void handleUserFoundExceptionTest() {
-        NotFoundException notFoundException = new UserFoundException(1L);
+        UserFoundException notFoundException = new UserFoundException(1L);
         ResponseEntity<Map<String, String>> response = errorHandler.handleNotFoundException(notFoundException);
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         assertEquals(response.getBody().get("error"), "Пользователь 1 не найден.");
@@ -36,7 +36,7 @@ public class ErrorHandlerTests {
 
     @Test
     void handleItemFoundExceptionTest() {
-        NotFoundException notFoundException = new ItemFoundException(1L);
+        ItemFoundException notFoundException = new ItemFoundException(1L);
         ResponseEntity<Map<String, String>> response = errorHandler.handleNotFoundException(notFoundException);
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         assertEquals(response.getBody().get("error"), "Вещь 1 не найдена.");
