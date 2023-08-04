@@ -61,7 +61,7 @@ public class ErrorHandlerTests {
     @Test
     void handleValidationExceptionTest() {
         ValidationException validationException = new ValidationException("Ошибка валидации.");
-        ResponseEntity<Map<String, String>> response = errorHandler.handleThrowable(validationException);
+        ResponseEntity<Map<String, String>> response = errorHandler.handleValidationException(validationException);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals(response.getBody().get("error"), "Ошибка валидации.");
     }

@@ -42,12 +42,12 @@ public class ErrorHandler {
             MissingServletRequestParameterException.class,
             ValidationException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Map<String, String> handleValidationException(final RuntimeException e) {
+    public ResponseEntity<Map<String, String>> handleValidationException(final RuntimeException e) {
         log.info("Получен статус {} {}. Причина: {}",
                 HttpStatus.BAD_REQUEST.value(),
                 HttpStatus.BAD_REQUEST.getReasonPhrase(),
                 e.getMessage());
-        return Map.of("error", e.getMessage());
+        return new ResponseEntity<>(Map.of("error", e.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler({ConstraintViolationException.class})
