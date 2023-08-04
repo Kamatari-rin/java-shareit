@@ -40,7 +40,7 @@ public class RequestController {
         return new ResponseEntity<>(requestService.getUserRequests(userId), HttpStatus.OK);
     }
 
-    @GetMapping("all")
+    @GetMapping("/all")
     public ResponseEntity<List<RequestResponseDto>> getItemRequests(
             @RequestHeader(HEADER_USER_ID) Long userId,
             @RequestParam(defaultValue = "0") @Min(value = 0) @Max(20) int from,

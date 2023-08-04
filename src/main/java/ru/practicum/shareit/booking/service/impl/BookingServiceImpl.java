@@ -1,7 +1,6 @@
 package ru.practicum.shareit.booking.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,11 +11,11 @@ import ru.practicum.shareit.booking.service.BookingService;
 import ru.practicum.shareit.booking.service.State;
 import ru.practicum.shareit.exception.ItemFoundException;
 import ru.practicum.shareit.exception.NotFoundException;
-import ru.practicum.shareit.exception.UserFoundException;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.repository.UserRepository;
+import ru.practicum.shareit.user.repository.mapper.UserMapper;
+import ru.practicum.shareit.user.service.UserService;
 import ru.practicum.shareit.util.OffsetBasedPageRequest;
 
 import javax.validation.ValidationException;
@@ -30,11 +29,10 @@ import static ru.practicum.shareit.util.Constant.SORT_BY_START_DATE_DESC;
 @Service
 @RequiredArgsConstructor
 @Transactional
-@Slf4j
 public class BookingServiceImpl implements BookingService {
 
     private final BookingRepository bookingRepository;
-    private final UserRepository userRepository;
+    private final UserService userService;
     private final ItemRepository itemRepository;
 
     @Override
@@ -51,7 +49,6 @@ public class BookingServiceImpl implements BookingService {
         switch (state) {
             case ALL:
                 bookings = bookingRepository.findAllByBookerId(user.getId(), page);
-                log.info(bookings.toString());
                 break;
             case PAST:
                 bookings = bookingRepository.findByBookerPast(user, timeNow, page);
@@ -133,8 +130,7 @@ public class BookingServiceImpl implements BookingService {
             throw new ValidationException("Дата окончания бронирования не может быть раньше или равна дате бронирования.");
         }
 
-        Item item = itemRepository.findById(itemId).orElseThrow(
-                () -> new ItemFoundException(itemId));
+        Item item = getOneItem(itemId);
 
         if (item.getOwner().getId().equals(bookerId)) {
             throw new NotFoundException("Вещь не может быть забронирована владельцем.");
@@ -146,9 +142,8 @@ public class BookingServiceImpl implements BookingService {
 
         if (bookingEnd.isBefore(LocalDateTime.now()) || bookingStart.equals(bookingEnd)) {
             throw new ValidationException(
-                    "Время окончания бронирования не может быть раньше времени начала бронирования вещи3.");
+                    "Время окончания бронирования не может быть в прошлом.");
         }
-
 
         Booking booking = Booking.builder()
                 .startBooking(bookingStart)
@@ -161,18 +156,26 @@ public class BookingServiceImpl implements BookingService {
         return bookingRepository.save(booking);
     }
 
+    private Item getOneItem(Long itemId) {
+        return itemRepository.findById(itemId).orElseThrow(
+                () -> new ItemFoundException(itemId)
+        );
+    }
+
     @Override
     public Booking approveBooking(Long userId, Long bookingId, Boolean state) {
         Booking booking = getBookingOrThrowException(bookingId);
 
         getUserOrThrowException(userId);
 
-        if (booking.getBooker().getId().equals(userId)) {
+        final Long bookerId = booking.getBooker().getId();
+        final Long ownerId = booking.getItem().getOwner().getId();
+
+        if (bookerId.equals(userId)) {
             throw new NotFoundException(String.format("У пользователя %s нет доступных бронирований.", userId));
         }
 
-        if (!booking.getItem().getOwner().getId().equals(userId)
-                || !booking.getStatus().equals(BookingStatus.WAITING)) {
+        if (!ownerId.equals(userId) || !booking.getStatus().equals(BookingStatus.WAITING)) {
             throw new ValidationException("Не возможно обновить статус. " +
                     "Для обновления статуса вы должны являться владельцем вещи," +
                     " а так же запрос должен ожидать подтверждения.");
@@ -196,7 +199,6 @@ public class BookingServiceImpl implements BookingService {
     }
 
     private User getUserOrThrowException(Long userId) {
-        return userRepository.findById(userId).orElseThrow(
-                () -> new UserFoundException(userId));
+        return UserMapper.mapToUserFromResponseDto(userService.getById(userId));
     }
 }

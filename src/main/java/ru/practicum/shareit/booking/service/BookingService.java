@@ -18,5 +18,7 @@ public interface BookingService {
 
     Booking approveBooking(Long userId, Long bookingId, Boolean approved);
 
-    List<Booking> getBookingByItemIdAndStatusNotInAndStartBookingBefore(Long itemId, BookingStatus status, LocalDateTime date);
+    List<Booking> getBookingByItemIdAndStatusNotInAndStartBookingBefore(Long itemId,
+                                                                        BookingStatus status,
+                                                                        LocalDateTime date);
 }

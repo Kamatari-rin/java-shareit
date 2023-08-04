@@ -7,7 +7,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.request.dto.RequestCreateDto;
 import ru.practicum.shareit.request.dto.RequestResponseDto;
 import ru.practicum.shareit.request.model.Request;
@@ -18,16 +17,11 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.mapper.UserMapper;
 import ru.practicum.shareit.user.service.UserService;
 
-import javax.validation.ValidationException;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import static ru.practicum.shareit.exception.ItemRequestFoundException.itemRequestFoundException;
-import static ru.practicum.shareit.util.Constant.FIRST_ELEMENT_INDEX;
-import static ru.practicum.shareit.util.Constant.LIMIT_OF_PAGES;
 
 @Service
 @RequiredArgsConstructor
@@ -37,7 +31,6 @@ public class RequestServiceImpl implements RequestService {
 
     private final UserService userService;
     private final RequestRepository requestRepository;
-    private final ItemRepository itemRepository;
 
     @Override
     public RequestResponseDto create(RequestCreateDto request) {

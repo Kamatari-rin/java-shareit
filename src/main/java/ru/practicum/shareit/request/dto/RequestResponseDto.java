@@ -6,7 +6,6 @@ import ru.practicum.shareit.item.dto.ItemResponseDto;
 
 import java.time.LocalDateTime;
 import java.util.Set;
-import java.util.SortedSet;
 
 @Data
 @Builder

@@ -2,6 +2,7 @@ package ru.practicum.shareit.exception;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.ServletRequestBindingException;
@@ -19,22 +20,21 @@ import java.util.Map;
 public class ErrorHandler {
 
     @ExceptionHandler({NotFoundException.class, UserFoundException.class, ItemFoundException.class})
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public Map<String, String> handleNotFoundException(final RuntimeException e) {
-        return Map.of("error", e.getMessage());
+    public ResponseEntity<Map<String, String>> handleNotFoundException(final RuntimeException e) {
+        return new ResponseEntity<>(Map.of("error", e.getMessage()), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler({AlreadyExistsException.class})
     @ResponseStatus(HttpStatus.CONFLICT)
-    public Map<String, String> handleAlreadyExistsException(final RuntimeException e) {
-        return Map.of("error", e.getMessage());
+    public ResponseEntity<Map<String, String>> handleAlreadyExistsException(final RuntimeException e) {
+        return new ResponseEntity<>(Map.of("error", e.getMessage()), HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public Map<String, String> handleThrowable(final Throwable e) {
+    public ResponseEntity<Map<String, String>> handleThrowable(final Throwable e) {
         log.info(e.getMessage());
-        return Map.of("error", e.getClass().toString());
+        return new ResponseEntity<>(Map.of("error", "Что-то пошло не так."), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler({MethodArgumentNotValidException.class,
@@ -42,7 +42,7 @@ public class ErrorHandler {
             MissingServletRequestParameterException.class,
             ValidationException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Map<String, String> handleThrowable(final RuntimeException e) {
+    public Map<String, String> handleValidationException(final RuntimeException e) {
         log.info("Получен статус {} {}. Причина: {}",
                 HttpStatus.BAD_REQUEST.value(),
                 HttpStatus.BAD_REQUEST.getReasonPhrase(),
@@ -52,7 +52,7 @@ public class ErrorHandler {
 
     @ExceptionHandler({ConstraintViolationException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Map<String, String> handleThrowable(final ConstraintViolationException e) {
+    public Map<String, String> handleConstraintViolationException(final ConstraintViolationException e) {
         log.debug("Получен статус {} {}. Причина: {}",
                 HttpStatus.BAD_REQUEST.value(),
                 HttpStatus.BAD_REQUEST.getReasonPhrase(),
