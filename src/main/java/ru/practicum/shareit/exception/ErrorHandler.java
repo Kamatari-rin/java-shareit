@@ -7,7 +7,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import javax.validation.ConstraintViolation;
@@ -24,14 +23,12 @@ public class ErrorHandler {
         return new ResponseEntity<>(Map.of("error", e.getMessage()), HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler({AlreadyExistsException.class})
-    @ResponseStatus(HttpStatus.CONFLICT)
+    @ExceptionHandler(AlreadyExistsException.class)
     public ResponseEntity<Map<String, String>> handleAlreadyExistsException(final RuntimeException e) {
         return new ResponseEntity<>(Map.of("error", e.getMessage()), HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ResponseEntity<Map<String, String>> handleThrowable(final Throwable e) {
         log.info(e.getMessage());
         return new ResponseEntity<>(Map.of("error", "Что-то пошло не так."), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -41,7 +38,6 @@ public class ErrorHandler {
             ServletRequestBindingException.class,
             MissingServletRequestParameterException.class,
             ValidationException.class})
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<Map<String, String>> handleValidationException(final RuntimeException e) {
         log.info("Получен статус {} {}. Причина: {}",
                 HttpStatus.BAD_REQUEST.value(),
@@ -50,8 +46,7 @@ public class ErrorHandler {
         return new ResponseEntity<>(Map.of("error", e.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler({ConstraintViolationException.class})
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<Map<String, String>> handleConstraintViolationException(final ConstraintViolationException e) {
         log.debug("Получен статус {} {}. Причина: {}",
                 HttpStatus.BAD_REQUEST.value(),
