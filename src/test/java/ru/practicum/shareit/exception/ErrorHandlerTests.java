@@ -7,7 +7,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import javax.validation.ConstraintViolationException;
 import javax.validation.ValidationException;
+import java.util.HashSet;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -64,5 +66,12 @@ public class ErrorHandlerTests {
         ResponseEntity<Map<String, String>> response = errorHandler.handleValidationException(validationException);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals(response.getBody().get("error"), "Ошибка валидации.");
+    }
+
+    @Test
+    void handleConstraintViolationExceptionTest() {
+        ConstraintViolationException validationException = new ConstraintViolationException(new HashSet<>());
+        ResponseEntity<Map<String, String>> response = errorHandler.handleConstraintViolationException(validationException);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
 }

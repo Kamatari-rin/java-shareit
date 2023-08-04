@@ -52,16 +52,16 @@ public class ErrorHandler {
 
     @ExceptionHandler({ConstraintViolationException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Map<String, String> handleConstraintViolationException(final ConstraintViolationException e) {
+    public ResponseEntity<Map<String, String>> handleConstraintViolationException(final ConstraintViolationException e) {
         log.debug("Получен статус {} {}. Причина: {}",
                 HttpStatus.BAD_REQUEST.value(),
                 HttpStatus.BAD_REQUEST.getReasonPhrase(),
                 e.getMessage());
-        return Map.of(
+        return new ResponseEntity<>(Map.of(
                 "error", e.getConstraintViolations()
                         .stream()
                         .map(ConstraintViolation::getMessageTemplate)
                         .findFirst().orElse("No message")
-        );
+        ), HttpStatus.BAD_REQUEST);
     }
 }
