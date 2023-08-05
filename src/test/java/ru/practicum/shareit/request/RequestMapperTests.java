@@ -9,8 +9,8 @@ import ru.practicum.shareit.request.repository.mapper.RequestMapper;
 import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -24,7 +24,7 @@ public class RequestMapperTests {
         User requestMaker = User.builder().id(1L).email("test@@email.com").name("requestMaker").build();
         Item item = Item.builder().id(1L).name("item").description("desc").owner(owner).available(true).build();
 
-        Set<Item> items = new HashSet<>();
+        List<Item> items = new ArrayList<>();
         items.add(item);
 
         Request request = Request.builder()
@@ -45,6 +45,6 @@ public class RequestMapperTests {
                 equalTo(request.getItems()
                         .stream()
                         .map(ItemMapper::mapToItemResponseDto)
-                        .collect(Collectors.toSet())));
+                        .collect(Collectors.toList())));
     }
 }

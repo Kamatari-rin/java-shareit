@@ -18,6 +18,7 @@ import ru.practicum.shareit.user.repository.mapper.UserMapper;
 import ru.practicum.shareit.user.service.UserService;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -56,7 +57,7 @@ public class ItemRequestServiceImplTests {
         requestCreateDto = RequestCreateDto.builder()
                 .userId(id).description("test").build();
         requestResponseDto = RequestResponseDto.builder()
-                .id(id).description("test").created(LocalDateTime.now()).items(new HashSet<>()).build();
+                .id(id).description("test").created(LocalDateTime.now()).items(new ArrayList<>()).build();
     }
 
     @Test

@@ -52,7 +52,7 @@ public class ItemRequestControllerTests {
 
     @BeforeEach
     void init() {
-        itemRequest = RequestResponseDto.builder().id(id).description(descr).created(time).items(new HashSet<>()).build();
+        itemRequest = RequestResponseDto.builder().id(id).description(descr).created(time).items(new ArrayList<>()).build();
         itemRequestCreate = RequestCreateDto.builder().description(descr).build();
         mvc = MockMvcBuilders.standaloneSetup(requestController).build();
 

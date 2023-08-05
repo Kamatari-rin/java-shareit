@@ -7,15 +7,15 @@ import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.Set;
+import java.util.List;
 
-@Data
 @Entity
 @Table(name = "requests", schema = "public")
-@EqualsAndHashCode(exclude = {"description", "requestMaker"})
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
+@Getter
+@Setter
 public class Request {
 
     @Id
@@ -33,15 +33,5 @@ public class Request {
 
     @OneToMany
     @JoinColumn(name = "request_id")
-    private Set<Item> items;
-
-    public void addItem(Item item) {
-        items.add(item);
-        item.setRequest(this);
-    }
-
-    public void removeItem(Item item) {
-        items.remove(item);
-        item.setRequest(null);
-    }
+    private List<Item> items;
 }
