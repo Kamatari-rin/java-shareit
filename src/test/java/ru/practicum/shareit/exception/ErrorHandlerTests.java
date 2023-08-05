@@ -47,7 +47,8 @@ public class ErrorHandlerTests {
     @Test
     void handleAlreadyExistsExceptionTest() {
         AlreadyExistsException alreadyExistsException = new AlreadyExistsException("Уже существует.");
-        ResponseEntity<Map<String, String>> response = errorHandler.handleAlreadyExistsException(alreadyExistsException);
+        ResponseEntity<Map<String, String>> response = errorHandler
+                .handleAlreadyExistsException(alreadyExistsException);
         assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
         assertEquals(response.getBody().get("error"), "Уже существует.");
     }
@@ -63,7 +64,8 @@ public class ErrorHandlerTests {
     @Test
     void handleValidationExceptionTest() {
         ValidationException validationException = new ValidationException("Ошибка валидации.");
-        ResponseEntity<Map<String, String>> response = errorHandler.handleValidationException(validationException);
+        ResponseEntity<Map<String, String>> response = errorHandler
+                .handleValidationException(validationException);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals(response.getBody().get("error"), "Ошибка валидации.");
     }
@@ -71,7 +73,8 @@ public class ErrorHandlerTests {
     @Test
     void handleConstraintViolationExceptionTest() {
         ConstraintViolationException validationException = new ConstraintViolationException(new HashSet<>());
-        ResponseEntity<Map<String, String>> response = errorHandler.handleConstraintViolationException(validationException);
+        ResponseEntity<Map<String, String>> response = errorHandler
+                .handleConstraintViolationException(validationException);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
 }

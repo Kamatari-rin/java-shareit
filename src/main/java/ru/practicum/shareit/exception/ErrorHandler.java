@@ -49,7 +49,8 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler({ConstraintViolationException.class})
-    public ResponseEntity<Map<String, String>> handleConstraintViolationException(final ConstraintViolationException e) {
+    public ResponseEntity<Map<String, String>> handleConstraintViolationException(
+            final ConstraintViolationException e) {
         log.debug("Получен статус {} {}. Причина: {}",
                 HttpStatus.BAD_REQUEST.value(),
                 HttpStatus.BAD_REQUEST.getReasonPhrase(),

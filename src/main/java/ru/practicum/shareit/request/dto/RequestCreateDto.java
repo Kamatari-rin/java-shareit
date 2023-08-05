@@ -13,8 +13,8 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 public class RequestCreateDto {
 
-    Long userId;
+    private Long userId;
 
     @NotNull
-    String description;
+    private String description;
 }
