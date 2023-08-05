@@ -6,28 +6,27 @@ import ru.practicum.shareit.item.repository.mapper.ItemMapper;
 import ru.practicum.shareit.request.dto.RequestResponseDto;
 import ru.practicum.shareit.request.model.Request;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @UtilityClass
 public class RequestMapper {
 
     public RequestResponseDto mapToRequestResponseDto(Request request) {
-        Set<ItemResponseDto> itemsSet = new HashSet<>();
+        List<ItemResponseDto> items = new ArrayList<>();
 
         if (request.getItems() != null) {
-            itemsSet.addAll(request.getItems()
+            items.addAll(request.getItems()
                     .stream()
                     .map(ItemMapper::mapToItemResponseDto)
-                    .collect(Collectors.toSet()));
+                    .collect(Collectors.toList()));
         }
 
         return RequestResponseDto.builder()
                 .id(request.getId())
                 .description(request.getDescription())
                 .created(request.getCreated())
-                .items(itemsSet)
+                .items(items)
                 .build();
     }
 }
