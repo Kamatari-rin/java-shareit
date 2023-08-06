@@ -14,18 +14,15 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static ru.practicum.shareit.util.Comparators.orderByCreatedDesc;
-import static ru.practicum.shareit.util.Comparators.orderByStartDateAsc;
-import static ru.practicum.shareit.util.Comparators.orderByStartDateDesc;
+import static ru.practicum.shareit.util.Comparators.orderCommentByCreatedDesc;
+import static ru.practicum.shareit.util.Comparators.orderBookingByStartDateAsc;
+import static ru.practicum.shareit.util.Comparators.orderBookingByStartDateDesc;
 
 @UtilityClass
 public class ItemMapper {
 
-    List<Long> list = new ArrayList<>();
-
     public Item mapToItem(ItemRequestDto itemRequestDto) {
         return Item.builder()
-                .id(itemRequestDto.getId())
                 .name(itemRequestDto.getName())
                 .description(itemRequestDto.getDescription())
                 .available(itemRequestDto.getAvailable())
@@ -40,7 +37,7 @@ public class ItemMapper {
     }
 
     public ItemResponseDto mapToItemResponseDto(Item item) {
-        SortedSet<CommentResponseDto> comments = new TreeSet<>(orderByCreatedDesc);
+        SortedSet<CommentResponseDto> comments = new TreeSet<>(orderCommentByCreatedDesc);
 
         if (item.getComments() != null) {
             comments.addAll(item.getComments()
@@ -49,11 +46,17 @@ public class ItemMapper {
                     .collect(Collectors.toSet()));
         }
 
+        Long requestId = null;
+        if (item.getRequest() != null) {
+            requestId = item.getRequest().getId();
+        }
+
         return ItemResponseDto.builder()
                 .id(item.getId())
                 .name(item.getName())
                 .description(item.getDescription())
                 .available(item.getAvailable())
+                .requestId(requestId)
                 .comments(comments)
                 .build();
     }
@@ -64,14 +67,14 @@ public class ItemMapper {
         Set<Booking> bookings = item.getBookings();
 
         Booking lastBooking = bookings.stream()
-                .sorted(orderByStartDateDesc)
+                .sorted(orderBookingByStartDateDesc)
                 .filter(t -> t.getStartBooking().isBefore(now)
                         && t.getStatus().equals(BookingStatus.APPROVED))
                 .findFirst()
                 .orElse(null);
 
         Booking nextBooking = bookings.stream()
-                .sorted(orderByStartDateAsc)
+                .sorted(orderBookingByStartDateAsc)
                 .filter(t -> t.getStartBooking().isAfter(now)
                         && t.getStatus().equals(BookingStatus.APPROVED))
                 .findFirst()

@@ -13,10 +13,12 @@ import ru.practicum.shareit.booking.service.BookingService;
 import ru.practicum.shareit.validation.ValuesAllowedConstraint;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static ru.practicum.shareit.util.Constant.REQUEST_HEADER_USER_ID;
+import static ru.practicum.shareit.util.Constant.*;
 
 @RestController
 @RequestMapping(path = "/bookings")
@@ -27,18 +29,20 @@ public class BookingController {
     private final BookingService bookingService;
 
     @GetMapping
-    public ResponseEntity<List<BookingResponseDto>> getUserBookings(@RequestHeader(REQUEST_HEADER_USER_ID) Long userId,
-                                                                    @ValuesAllowedConstraint(
-                                                                    propName = "state",
-                                                                    values = {"all",
-                                                                            "current",
-                                                                            "past",
-                                                                            "future",
-                                                                            "waiting",
-                                                                            "rejected"},
-                                                                    message = "Unknown state: UNSUPPORTED_STATUS")
-                                            @               RequestParam(defaultValue = "all") String state) {
-        List<BookingResponseDto> userBookings = bookingService.getUserBookings(userId, state)
+    public ResponseEntity<List<BookingResponseDto>> getUserBookings(
+            @RequestHeader(HEADER_USER_ID) Long userId,
+            @RequestParam(defaultValue = FIRST_ELEMENT_INDEX) @PositiveOrZero int from,
+            @RequestParam(defaultValue = LIMIT_OF_PAGES) @Positive int size,
+            @ValuesAllowedConstraint(propName = "state",
+                                     values = {"all",
+                                               "current",
+                                               "past",
+                                               "future",
+                                               "waiting",
+                                               "rejected"},
+                                     message = "Unknown state: UNSUPPORTED_STATUS")
+            @RequestParam(defaultValue = "all") String state) {
+        List<BookingResponseDto> userBookings = bookingService.getUserBookings(userId, state, from, size)
                 .stream()
                 .map(BookingMapper::mapToBookingDto)
                 .collect(Collectors.toList());
@@ -46,18 +50,20 @@ public class BookingController {
     }
 
     @GetMapping("/owner")
-    public ResponseEntity<List<BookingResponseDto>> getOwnerBookings(@RequestHeader(REQUEST_HEADER_USER_ID) Long userId,
-                                                                     @ValuesAllowedConstraint(
-                                                             propName = "state",
-                                                             values = {"all",
-                                                                       "current",
-                                                                       "past",
-                                                                       "future",
-                                                                       "waiting",
-                                                                       "rejected"},
-                                                             message = "Unknown state: UNSUPPORTED_STATUS")
-                                                             @RequestParam(defaultValue = "all") String state) {
-        List<BookingResponseDto> ownerBookings = bookingService.getOwnerBookings(userId, state)
+    public ResponseEntity<List<BookingResponseDto>> getOwnerBookings(
+            @RequestHeader(HEADER_USER_ID) Long userId,
+            @RequestParam(defaultValue = FIRST_ELEMENT_INDEX) @PositiveOrZero int from,
+            @RequestParam(defaultValue = LIMIT_OF_PAGES) @Positive int size,
+            @ValuesAllowedConstraint(propName = "state",
+                                     values = {"all",
+                                               "current",
+                                               "past",
+                                               "future",
+                                               "waiting",
+                                               "rejected"},
+                                     message = "Unknown state: UNSUPPORTED_STATUS")
+            @RequestParam(defaultValue = "all") String state) {
+        List<BookingResponseDto> ownerBookings = bookingService.getOwnerBookings(userId, state, from, size)
                 .stream()
                 .map(BookingMapper::mapToBookingDto)
                 .collect(Collectors.toList());
@@ -65,14 +71,14 @@ public class BookingController {
     }
 
     @GetMapping("/{bookingId}")
-    public ResponseEntity<BookingResponseDto> getBookingById(@RequestHeader(REQUEST_HEADER_USER_ID) Long userId,
+    public ResponseEntity<BookingResponseDto> getBookingById(@RequestHeader(HEADER_USER_ID) Long userId,
                                                              @PathVariable Long bookingId) {
         Booking booking = bookingService.getBookingByIdOwnerOrBookerOnly(userId, bookingId);
         return new ResponseEntity<>(BookingMapper.mapToBookingDto(booking), HttpStatus.OK);
     }
 
     @PostMapping
-    public ResponseEntity<BookingResponseDto> create(@RequestHeader(REQUEST_HEADER_USER_ID) Long userId,
+    public ResponseEntity<BookingResponseDto> create(@RequestHeader(HEADER_USER_ID) Long userId,
                                                      @RequestBody @Valid CreateBookingRequestDto booking) {
         Booking newBooking = bookingService.create(
                 booking.getItemId(),
@@ -83,7 +89,7 @@ public class BookingController {
     }
 
     @PatchMapping("/{bookingId}")
-    public ResponseEntity<BookingResponseDto> approveBooking(@RequestHeader(REQUEST_HEADER_USER_ID) Long userId,
+    public ResponseEntity<BookingResponseDto> approveBooking(@RequestHeader(HEADER_USER_ID) Long userId,
                                                              @PathVariable Long bookingId,
                                                              @RequestParam Boolean approved) {
         Booking booking = bookingService.approveBooking(userId, bookingId, approved);

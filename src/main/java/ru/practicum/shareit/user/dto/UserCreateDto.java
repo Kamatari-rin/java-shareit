@@ -1,7 +1,9 @@
 package ru.practicum.shareit.user.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import ru.practicum.shareit.marker.OnCreate;
 import ru.practicum.shareit.marker.OnUpdate;
 
@@ -10,9 +12,9 @@ import javax.validation.constraints.NotBlank;
 
 @Data
 @Builder
-public class UserDto {
-
-    private Long id;
+@AllArgsConstructor
+@NoArgsConstructor
+public class UserCreateDto {
 
     @NotBlank(groups = OnCreate.class,
             message = "Имя не может быть пустым.")

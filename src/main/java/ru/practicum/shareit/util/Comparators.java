@@ -7,7 +7,7 @@ import java.util.Comparator;
 
 public class Comparators {
 
-    public static final Comparator<Booking> orderByStartDateDesc = (a, b) -> {
+    public static final Comparator<Booking> orderBookingByStartDateDesc = (a, b) -> {
         if (a.getStartBooking().isAfter(b.getStartBooking())) {
             return -1;
         } else if (a.getStartBooking().isBefore(b.getStartBooking())) {
@@ -17,7 +17,7 @@ public class Comparators {
         }
     };
 
-    public static final Comparator<Booking> orderByStartDateAsc = (a, b) -> {
+    public static final Comparator<Booking> orderBookingByStartDateAsc = (a, b) -> {
         if (a.getStartBooking().isAfter(b.getStartBooking())) {
             return 1;
         } else if (a.getStartBooking().isBefore(b.getStartBooking())) {
@@ -27,7 +27,7 @@ public class Comparators {
         }
     };
 
-    public static final Comparator<CommentResponseDto> orderByCreatedDesc = (a, b) -> {
+    public static final Comparator<CommentResponseDto> orderCommentByCreatedDesc = (a, b) -> {
         if (a.getCreated().isAfter(b.getCreated())) {
             return 1;
         } else if (a.getCreated().isBefore(b.getCreated())) {

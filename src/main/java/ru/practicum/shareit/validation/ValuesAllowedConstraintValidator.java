@@ -7,13 +7,11 @@ import java.util.List;
 
 public class ValuesAllowedConstraintValidator implements ConstraintValidator<ValuesAllowedConstraint, String> {
 
-    private String propName;
     private String message;
     private List<String> allowable;
 
     @Override
     public void initialize(ValuesAllowedConstraint requiredIfChecked) {
-        this.propName = requiredIfChecked.propName();
         this.message = requiredIfChecked.message();
         this.allowable = Arrays.asList(requiredIfChecked.values());
     }
