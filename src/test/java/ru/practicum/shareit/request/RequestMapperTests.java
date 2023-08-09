@@ -37,7 +37,6 @@ public class RequestMapperTests {
                 .build();
 
         RequestResponseDto requestResponseDto = RequestMapper.mapToRequestResponseDto(request);
-
         assertThat(requestResponseDto.getId(), equalTo(request.getId()));
         assertThat(requestResponseDto.getDescription(), equalTo(request.getDescription()));
         assertThat(requestResponseDto.getCreated(), equalTo(request.getCreated()));
