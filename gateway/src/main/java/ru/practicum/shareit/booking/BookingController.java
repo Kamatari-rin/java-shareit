@@ -40,14 +40,13 @@ public class BookingController {
 
     @GetMapping
     public ResponseEntity<Object> getBookingsByUserId(@RequestHeader(HEADER_USER_ID) Long userId,
-                                                      @ValuesAllowedConstraint(
-                                                              propName = "state",
+                                                      @ValuesAllowedConstraint(propName = "state",
                                                               values = {"all",
-                                                                        "current",
-                                                                        "past",
-                                                                        "future",
-                                                                        "waiting",
-                                                                        "rejected"},
+                                                                      "current",
+                                                                      "past",
+                                                                      "future",
+                                                                      "waiting",
+                                                                      "rejected"},
                                                               message = "Unknown state: UNSUPPORTED_STATUS")
                                                       @RequestParam(defaultValue = "all") String state,
                                                       @RequestParam(defaultValue = DEFAULT_ELEMENT_INDEX) int from,
@@ -57,14 +56,13 @@ public class BookingController {
 
     @GetMapping("/owner")
     public ResponseEntity<Object> getOwnerBooking(@RequestHeader(HEADER_USER_ID) Long userId,
-                                                  @ValuesAllowedConstraint(
-                                                          propName = "state",
+                                                  @ValuesAllowedConstraint(propName = "state",
                                                           values = {"all",
-                                                                    "current",
-                                                                    "past",
-                                                                    "future",
-                                                                    "waiting",
-                                                                    "rejected"},
+                                                                  "current",
+                                                                  "past",
+                                                                  "future",
+                                                                  "waiting",
+                                                                  "rejected"},
                                                           message = "Unknown state: UNSUPPORTED_STATUS")
                                                   @RequestParam(defaultValue = "all") String state,
                                                   @RequestParam(defaultValue = DEFAULT_ELEMENT_INDEX) int from,
