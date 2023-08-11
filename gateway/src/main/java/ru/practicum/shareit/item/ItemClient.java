@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 import ru.practicum.shareit.client.BaseClient;
 import ru.practicum.shareit.item.dto.CommentRequestDto;
-import ru.practicum.shareit.item.dto.ItemRequestDto;
+import ru.practicum.shareit.item.dto.ItemCreateDto;
 
 import java.util.Map;
 
@@ -17,20 +17,20 @@ public class ItemClient extends BaseClient {
 
     private static final String API_PREFIX = "/items";
 
-    public ItemClient(@Value("${shareit-server.url}") String serverUrl, RestTemplateBuilder restTemplateBuilder) {
-        super(restTemplateBuilder
+    public ItemClient(@Value("${shareit-server.url}") String serverUrl, RestTemplateBuilder builder) {
+        super(builder
                 .uriTemplateHandler(new DefaultUriBuilderFactory(serverUrl + API_PREFIX))
                 .requestFactory(HttpComponentsClientHttpRequestFactory::new)
                 .build()
         );
     }
 
-    public ResponseEntity<Object> save(Long userId, ItemRequestDto item) {
+    public ResponseEntity<Object> save(Long userId, ItemCreateDto item) {
         return post("", userId, item);
     }
 
-    public ResponseEntity<Object> update(Long userId, Long itemId, ItemRequestDto item) {
-        return patch("/" + itemId, item);
+    public ResponseEntity<Object> update(Long userId, Long itemId, ItemCreateDto item) {
+        return patch("/" + itemId, userId, item);
     }
 
     public ResponseEntity<Object> getById(Long userId, Long itemId) {

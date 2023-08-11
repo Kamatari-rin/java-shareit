@@ -5,7 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.CommentRequestDto;
-import ru.practicum.shareit.item.dto.ItemRequestDto;
+import ru.practicum.shareit.item.dto.ItemCreateDto;
 import ru.practicum.shareit.marker.OnCreate;
 import ru.practicum.shareit.marker.OnUpdate;
 
@@ -26,13 +26,13 @@ public class ItemController {
 
     @PostMapping
     public ResponseEntity<Object> save(@RequestHeader(HEADER_USER_ID) Long userId,
-                                       @Validated(OnCreate.class) @RequestBody ItemRequestDto item) {
+                                       @Validated(OnCreate.class) @RequestBody ItemCreateDto item) {
         return itemClient.save(userId, item);
     }
 
     @PatchMapping("/{itemId}")
     public ResponseEntity<Object> update(@RequestHeader(HEADER_USER_ID) Long userId,
-                                         @Validated(OnUpdate.class) @RequestBody ItemRequestDto item,
+                                         @Validated(OnUpdate.class) @RequestBody ItemCreateDto item,
                                          @PathVariable Long itemId) {
         return itemClient.update(userId, itemId, item);
     }
